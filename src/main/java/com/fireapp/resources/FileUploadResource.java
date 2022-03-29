@@ -1,15 +1,18 @@
 package com.fireapp.resources;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -39,6 +42,12 @@ public class FileUploadResource {
         }else{
             logger.error("O tipo " + file.getContentType() + " não é permitido. Tipos aceitos: " + Arrays.stream(EXTENSOES).toList());
         }
+    }
+
+    @GetMapping(value = "/{imagem}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImageWithMediaType(@PathVariable String imagem) throws IOException {
+        InputStream in = new FileInputStream("src/main/resources/uploads/"+imagem);
+        return new ResponseEntity<>(IOUtils.toByteArray(in), HttpStatus.OK);
     }
 
 }
